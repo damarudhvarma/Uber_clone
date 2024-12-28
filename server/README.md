@@ -133,3 +133,70 @@ Example:
   "message": "Invalid Email or Password"
 }
 ```
+
+## User Profile Endpoint
+
+### Endpoint
+`GET /users/profile`
+
+### Description
+This endpoint is used to get the profile of the currently authenticated user. It requires the user to be authenticated.
+
+### Response
+#### Success (200 OK)
+- The user's profile is successfully retrieved.
+- Returns a JSON object containing the user details.
+
+Example:
+```json
+{
+  "_id": "user_id",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com"
+}
+```
+
+#### Error (401 Unauthorized)
+- The user is not authenticated.
+- Returns a JSON object containing the error message.
+
+Example:
+```json
+{
+  "message": "Not authorized, token failed"
+}
+```
+
+## User Logout Endpoint
+
+### Endpoint
+`GET /users/logout`
+
+### Description
+This endpoint is used to log out the currently authenticated user. It requires the user to be authenticated.
+
+### Response
+#### Success (200 OK)
+- The user is successfully logged out.
+- Returns a JSON object containing a success message.
+
+Example:
+```json
+{
+  "message": "Logged Out Successfully"
+}
+```
+
+#### Error (401 Unauthorized)
+- The user is not authenticated.
+- Returns a JSON object containing the error message.
+
+Example:
+```json
+{
+  "message": "Not authorized, token failed"
+}
+```
