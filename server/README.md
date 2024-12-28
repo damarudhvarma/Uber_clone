@@ -200,3 +200,94 @@ Example:
   "message": "Not authorized, token failed"
 }
 ```
+
+## Captain Registration Endpoint
+
+### Endpoint
+`POST /captains/register`
+
+### Description
+Register a new captain with their vehicle details.
+
+### Request Body
+Required fields:
+- `fullname`: Object containing:
+  - `firstname`: String (min 3 characters)
+  - `lastname`: String (min 3 characters) 
+- `email`: String (valid email format)
+- `password`: String (min 6 characters)
+- `vehicle`: Object containing:
+  - `color`: String (min 3 characters)
+  - `plate`: String (min 3 characters)
+  - `capacity`: Number (min value: 1)
+  - `vehicleType`: String (must be 'car', 'auto' or 'motorcycle')
+
+Example:
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john.doe@example.com", 
+  "password": "password123",
+  "vehicle": {
+    "color": "black",
+    "plate": "TS 00 AB 000",
+    "capacity": 1,
+    "vehicleType": "car"
+  }
+}
+
+```
+### Response
+### Success (201 Created)
+Returns authentication token and captain details.
+
+Example:
+```json
+{
+  "token": "jwt_token_here",
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "black",
+      "plate": "TS 00 AB 000",
+      "capacity": 1,
+      "vehicleType": "car"
+    }
+  }
+}
+
+```
+### Error (400 Bad Request)
+Returns validation errors or duplicate email error.
+
+Example (Validation Error):
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+Example (Duplicate Email):
+
+```json
+{
+  "error": "Captain already exist"
+}
+```
+
+
+
+
