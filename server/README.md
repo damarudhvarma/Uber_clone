@@ -238,10 +238,10 @@ Example:
     "vehicleType": "car"
   }
 }
-
 ```
+
 ### Response
-### Success (201 Created)
+#### Success (201 Created)
 Returns authentication token and captain details.
 
 Example:
@@ -263,9 +263,9 @@ Example:
     }
   }
 }
-
 ```
-### Error (400 Bad Request)
+
+#### Error (400 Bad Request)
 Returns validation errors or duplicate email error.
 
 Example (Validation Error):
@@ -280,11 +280,161 @@ Example (Validation Error):
   ]
 }
 ```
-Example (Duplicate Email):
 
+Example (Duplicate Email):
 ```json
 {
   "error": "Captain already exist"
+}
+```
+
+## Captain Login Endpoint
+
+### Endpoint
+`POST /captains/login`
+
+### Description
+This endpoint is used to log in an existing captain. It requires the captain's email and password.
+
+### Request Body
+The request body should be a JSON object containing the following fields:
+- `email`: The captain's email address (string, required, must be a valid email)
+- `password`: The captain's password (string, required, must be at least 6 characters long)
+
+Example:
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+### Response
+#### Success (200 OK)
+- The captain is successfully logged in.
+- Returns a JSON object containing the authentication token and captain details.
+
+Example:
+```json
+{
+  "token": "your_jwt_token",
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "black",
+      "plate": "TS 00 AB 000",
+      "capacity": 1,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+#### Error (400 Bad Request)
+- The request body is invalid or missing required fields.
+- Returns a JSON object containing the error details.
+
+Example:
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+#### Error (401 Unauthorized)
+- The email or password is incorrect.
+- Returns a JSON object containing the error message.
+
+Example:
+```json
+{
+  "error": "Invalid email or password"
+}
+```
+
+## Captain Profile Endpoint
+
+### Endpoint
+`GET /captains/profile`
+
+### Description
+This endpoint is used to get the profile of the currently authenticated captain. It requires the captain to be authenticated.
+
+### Response
+#### Success (200 OK)
+- The captain's profile is successfully retrieved.
+- Returns a JSON object containing the captain details.
+
+Example:
+```json
+{
+  "captain": {
+    "_id": "captain_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "vehicle": {
+      "color": "black",
+      "plate": "TS 00 AB 000",
+      "capacity": 1,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+#### Error (401 Unauthorized)
+- The captain is not authenticated.
+- Returns a JSON object containing the error message.
+
+Example:
+```json
+{
+  "message": "Not authorized, token failed"
+}
+```
+
+## Captain Logout Endpoint
+
+### Endpoint
+`GET /captains/logout`
+
+### Description
+This endpoint is used to log out the currently authenticated captain. It requires the captain to be authenticated.
+
+### Response
+#### Success (200 OK)
+- The captain is successfully logged out.
+- Returns a JSON object containing a success message.
+
+Example:
+```json
+{
+  "message": "Logout Successfully"
+}
+```
+
+#### Error (401 Unauthorized)
+- The captain is not authenticated.
+- Returns a JSON object containing the error message.
+
+Example:
+```json
+{
+  "message": "Not authorized, token failed"
 }
 ```
 
