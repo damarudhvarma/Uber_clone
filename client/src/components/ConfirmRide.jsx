@@ -2,7 +2,7 @@ import React from "react";
 
 const ConfirmRide = ({ setconfirmRidePanel,setvehicleFound }) => {
   return (
-    <div>
+    <div className="">
       {" "}
       <h5
         onClick={() => setconfirmRidePanel(false)}
