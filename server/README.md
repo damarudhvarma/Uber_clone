@@ -438,6 +438,296 @@ Example:
 }
 ```
 
+## Maps Endpoints
+
+### Get Coordinates
+
+#### Endpoint
+`GET /maps/get-coordinates`
+
+#### Description
+Fetches the coordinates (latitude and longitude) for a given address.
+
+#### Request Parameters
+- `address`: The address to get coordinates for (string, required, minimum length 3 characters)
+
+#### Response
+##### Success (200 OK)
+Returns the coordinates for the given address.
+
+Example:
+```json
+{
+  "lat": 17.385044,
+  "lng": 78.486671
+}
+```
+
+##### Error (400 Bad Request)
+Returns validation errors if the address is invalid.
+
+Example:
+```json
+{
+  "errors": [
+    {
+      "msg": "Address must be at least 3 characters long",
+      "param": "address",
+      "location": "query"
+    }
+  ]
+}
+```
+
+##### Error (404 Not Found)
+Returns an error if the coordinates could not be found.
+
+Example:
+```json
+{
+  "message": "Coordinates not found"
+}
+```
+
+### Get Distance and Time
+
+#### Endpoint
+`GET /maps/get-distance-time`
+
+#### Description
+Fetches the distance and estimated travel time between two locations.
+
+#### Request Parameters
+- `origin`: The starting location (string, required, minimum length 3 characters)
+- `destination`: The destination location (string, required, minimum length 3 characters)
+
+#### Response
+##### Success (200 OK)
+Returns the distance and estimated travel time between the origin and destination.
+
+Example:
+```json
+{
+  "distance": "10 km",
+  "duration": "20 mins"
+}
+```
+
+##### Error (400 Bad Request)
+Returns validation errors if the origin or destination is invalid.
+
+Example:
+```json
+{
+  "errors": [
+    {
+      "msg": "Origin must be at least 3 characters long",
+      "param": "origin",
+      "location": "query"
+    },
+    {
+      "msg": "Destination must be at least 3 characters long",
+      "param": "destination",
+      "location": "query"
+    }
+  ]
+}
+```
+
+##### Error (500 Internal Server Error)
+Returns an error if there was an issue fetching the distance and time.
+
+Example:
+```json
+{
+  "message": "Unable to fetch distance"
+}
+```
+
+### Get Auto-Completion Suggestions
+
+#### Endpoint
+`GET /maps/get-suggestions`
+
+#### Description
+Fetches auto-completion suggestions for a given input.
+
+#### Request Parameters
+- `input`: The input string to get suggestions for (string, required)
+
+#### Response
+##### Success (200 OK)
+Returns a list of suggestions for the given input.
+
+Example:
+```json
+[
+  "Hyderabad, Telangana, India",
+  "Hyde Park Winter Wonderland, Louisa Duckworth Walk, London, UK",
+  "Hyde Park, London, UK",
+  "Hyderabad, Pakistan",
+  "Hydra, Algeria"
+]
+```
+
+##### Error (400 Bad Request)
+Returns validation errors if the input is invalid.
+
+Example:
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid value",
+      "param": "input",
+      "location": "query"
+    }
+  ]
+}
+```
+
+##### Error (500 Internal Server Error)
+Returns an error if there was an issue fetching the suggestions.
+
+Example:
+```json
+{
+  "message": "Unable to fetch suggestions"
+}
+```
+
+## Ride Endpoints
+
+### Create Ride
+
+#### Endpoint
+`POST /ride/create`
+
+#### Description
+Creates a new ride with the given details.
+
+#### Request Body
+The request body should be a JSON object containing the following fields:
+- `pickup`: The pickup location (string, required)
+- `destination`: The destination location (string, required)
+- `vehicleType`: The type of vehicle (string, required, must be one of 'auto', 'motorcycle', 'car')
+
+Example:
+```json
+{
+  "pickup": "Hyderabad, Telangana, India",
+  "destination": "Secunderabad, Telangana, India",
+  "vehicleType": "car"
+}
+```
+
+#### Response
+##### Success (201 Created)
+Returns the created ride details.
+
+Example:
+```json
+{
+  "user": "user_id",
+  "pickup": "Hyderabad, Telangana, India",
+  "destination": "Secunderabad, Telangana, India",
+  "otp": "123456",
+  "fare": 150
+}
+```
+
+##### Error (400 Bad Request)
+Returns validation errors if the request body is invalid.
+
+Example:
+```json
+{
+  "errors": [
+    {
+      "msg": "Pickup is required",
+      "param": "pickup",
+      "location": "body"
+    },
+    {
+      "msg": "Destination is required",
+      "param": "destination",
+      "location": "body"
+    },
+    {
+      "msg": "Vehicle Type is required",
+      "param": "vehicleType",
+      "location": "body"
+    }
+  ]
+}
+```
+
+##### Error (500 Internal Server Error)
+Returns an error if there was an issue creating the ride.
+
+Example:
+```json
+{
+  "error": "Unable to create ride"
+}
+```
+
+### Get Fare
+
+#### Endpoint
+`GET /ride/get-fare`
+
+#### Description
+Fetches the fare for a ride between the given pickup and destination locations.
+
+#### Request Parameters
+- `pickup`: The pickup location (string, required)
+- `destination`: The destination location (string, required)
+
+#### Response
+##### Success (200 OK)
+Returns the fare for the ride.
+
+Example:
+```json
+{
+  "auto": 100,
+  "car": 150,
+  "motorcycle": 80
+}
+```
+
+##### Error (400 Bad Request)
+Returns validation errors if the pickup or destination is invalid.
+
+Example:
+```json
+{
+  "errors": [
+    {
+      "msg": "Pickup is required",
+      "param": "pickup",
+      "location": "query"
+    },
+    {
+      "msg": "Destination is required",
+      "param": "destination",
+      "location": "query"
+    }
+  ]
+}
+```
+
+##### Error (500 Internal Server Error)
+Returns an error if there was an issue fetching the fare.
+
+Example:
+```json
+{
+  "error": "Unable to fetch fare"
+}
+```
+
 
 
 
