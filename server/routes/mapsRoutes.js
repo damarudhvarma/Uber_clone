@@ -16,7 +16,7 @@ const mapsRouter = Router();
     authUser,getDistanceController);
   
   mapsRouter.get('/get-suggestions',
-    query('input').notEmpty().isString().isLength({ min: 3 }).withMessage('Input must be at least 3 characters long'),
+    query('input').notEmpty().isString(),
     authUser,getAutoCompletionSuggestionsController);
 
    
