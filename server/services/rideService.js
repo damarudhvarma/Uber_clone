@@ -1,15 +1,14 @@
 import rideModel from "../models/rideModel.js";
 import { getDistance } from "./Maps.service.js";
-import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
 
-async function getFare(pickup,destination) {
+async function getFare(pickup,dropoff) {
 
-        if(!pickup || !destination){
+        if(!pickup || !dropoff){
             throw new Error('Pickup and Destination are required');
         }
-        const distanceTime = await getDistance(pickup, destination);
+        const distanceTime = await getDistance(pickup, dropoff);
 
 
 // Parse distance and duration from the distanceTime object
@@ -44,6 +43,8 @@ return fare;
     
 
 }
+
+export const totalFare= getFare;
 
 function getOtp(num) {
     function generateOtp(num) {
