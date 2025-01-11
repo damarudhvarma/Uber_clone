@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import { createRides, totalFare } from "../services/rideService.js";
 import { getCaptainsInTheRadius, getLocationCoordinates } from "../services/Maps.service.js";
 import { sendMessageToSocketId } from "../socket.js";
+import rideModel from "../models/rideModel.js";
 
 export const createRide = async (req, res) => {
   const errors = validationResult(req);
@@ -31,14 +32,17 @@ export const createRide = async (req, res) => {
       pickupCoordinates.lng,
       2 
     );
+ 
      ride.otp="";
-    
+     const rideWithUser = await rideModel.findOne({_id:ride._id}).populate('user');
+     
      captainsInRadius.map((captain) => {
         
         sendMessageToSocketId(captain.socketId, {
             event: "new-ride",
-            data: ride 
+            data: rideWithUser, 
         });
+
     });
     
 

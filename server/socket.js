@@ -58,10 +58,10 @@ export function initializeSocket(server) {
 }
 
 export function sendMessageToSocketId(socketId, messageObject) {
-    console.log(messageObject);
-
+  
     if (io) {
         io.to(socketId).emit(messageObject.event, messageObject.data);
+        console.log("sent message to socketId")
     } else {
         console.error('Socket.io not initialized.');
     }

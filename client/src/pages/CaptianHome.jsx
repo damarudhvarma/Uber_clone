@@ -23,39 +23,49 @@ const CaptianHome = () => {
   const {sendMessage, receiveMessage,socket} = useContext(SocketContext) 
   const {captain}=useContext(CaptainDataContext)
 
- useEffect(() => {
-   
-  sendMessage('join', {
-     userId: captain._id,
-     userType: 'captain'
-  })
+  useEffect(() => {
+    if (!captain || !captain._id) {
+      console.error("Captain data is missing!");
+      return;
+    }
 
-  const updateLocation = ()=>{
-    if(navigator.geolocation){
-     navigator.geolocation.getCurrentPosition((position)=>{
-     
-       sendMessage('update-location-captain', {  
-          userId: captain._id,
-          location: {
-            ltd: position.coords.latitude,
-            lng: position.coords.longitude
-          }
-        })
-      })
-  }
-  }
-  setInterval(updateLocation(), 10000)
-  return ()=>{
-    // clearInterval(updateLocation)
-  }
+    // Send join event to the server
+    sendMessage("join", {
+      userId: captain._id,
+      userType: "captain",
+    });
 
- 
-// updateLocation()
-   
- }, [])
+    // Function to update captain's location
+    const updateLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          sendMessage("update-location-captain", {
+            userId: captain._id,
+            location: {
+              ltd: position.coords.latitude,
+              lng: position.coords.longitude,
+            },
+          });
+        });
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+
+    // Set interval to send location every 10 seconds
+    const intervalId = setInterval(updateLocation, 10000);
+
+    // Send location immediately on component mount
+    updateLocation();
+
+    // Cleanup interval on component unmount
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [captain, sendMessage]);
  
  socket.on('new-ride', (data)=>{  
-  console.log(data)
+  console.log("eventData:",data);
  })
 
   useGSAP(() => {

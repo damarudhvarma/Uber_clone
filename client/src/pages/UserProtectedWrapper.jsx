@@ -16,23 +16,25 @@ const UserProtectedWrapper = ({
     if(!token){
         navigate('/login')
     } 
-    }, [token])  
 
     axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-    }).then((res)=>{
-      if(res.status===200){
-        setUser(res.data.user)
-        setloading(false)
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    })
-    .catch((err)=>{
-      console.log(err)
-      localStorage.removeItem('token')
-      navigate('/login')
-    })
+  }).then((res)=>{
+    if(res.status===200){
+      setUser(res.data)
+      setloading(false)
+    }
+  })
+  .catch((err)=>{
+    console.log(err)
+    localStorage.removeItem('token')
+    navigate('/login')
+  })
+    }, [token, navigate, setUser])  
+
+    
 
     if(loading){  
         return <div>Loading...</div>
