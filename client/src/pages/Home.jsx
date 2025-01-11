@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -10,6 +10,8 @@ import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDrivers from "../components/WaitingForDrivers";
 import axios from 'axios';
 import { Link } from "react-router-dom";
+import { SocketContext } from "../context/SocketContext";
+import { UserDataContext } from "../context/UserContext";
 
 const Home = () => {
   const [pickup, setpickup] = useState("");
@@ -36,6 +38,16 @@ const Home = () => {
 
   const [fare, setfare] = useState({})
 
+  const {sendMessage, receiveMessage} = useContext(SocketContext) 
+  const {user}= useContext(UserDataContext)
+ 
+
+useEffect(()=>{
+sendMessage("join", {userType: 'user', userId: user._id})
+
+
+
+},[user])
   
 
   const vehicles= {

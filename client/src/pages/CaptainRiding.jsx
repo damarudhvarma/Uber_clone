@@ -35,7 +35,7 @@ const [finishRidePanel, setFinishRidePanel] = useState(false);
           to="/home"
           className="h-10 w-10 bg-white flex items-center justify-center shadow-lg rounded-full  "
         >
-          <i class="ri-logout-box-r-line"></i>
+          <i className="ri-logout-box-r-line"></i>
         </Link>
       </div>
       <div className="h-4/5 ">

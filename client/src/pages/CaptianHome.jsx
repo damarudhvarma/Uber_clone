@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import CaptainDetails from '../components/CaptainDetails'
 import RidePopup from '../components/RidePopup'
@@ -6,6 +6,11 @@ import { useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import ConfirmRidePopup from '../components/ConfirmRidePopup'
+import { SocketContext } from '../context/SocketContext'
+import { CaptainDataContext } from '../context/CaptainContext'
+
+
+
 
 const CaptianHome = () => {
   
@@ -14,6 +19,44 @@ const CaptianHome = () => {
 
   const [confirmRidePopup, setConfirmRidePopup] = useState(false);
   const confirmRidePopupRef = useRef(null);
+
+  const {sendMessage, receiveMessage,socket} = useContext(SocketContext) 
+  const {captain}=useContext(CaptainDataContext)
+
+ useEffect(() => {
+   
+  sendMessage('join', {
+     userId: captain._id,
+     userType: 'captain'
+  })
+
+  const updateLocation = ()=>{
+    if(navigator.geolocation){
+     navigator.geolocation.getCurrentPosition((position)=>{
+     
+       sendMessage('update-location-captain', {  
+          userId: captain._id,
+          location: {
+            ltd: position.coords.latitude,
+            lng: position.coords.longitude
+          }
+        })
+      })
+  }
+  }
+  setInterval(updateLocation(), 10000)
+  return ()=>{
+    // clearInterval(updateLocation)
+  }
+
+ 
+// updateLocation()
+   
+ }, [])
+ 
+ socket.on('new-ride', (data)=>{  
+  console.log(data)
+ })
 
   useGSAP(() => {
     if (ridePopupPanel) {
@@ -49,8 +92,8 @@ const CaptianHome = () => {
         src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
         alt="uber"
       />
-      <Link to='/home' className='h-10 w-10 bg-white flex items-center justify-center shadow-lg rounded-full  '>
-      <i class="ri-logout-box-r-line"></i>
+      <Link to='/captain-logout' className='h-10 w-10 bg-white flex items-center justify-center shadow-lg rounded-full  '>
+      <i className="ri-logout-box-r-line"></i>
         </Link>
       </div>
         <div className='h-3/5 '>

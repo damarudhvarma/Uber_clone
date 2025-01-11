@@ -32,7 +32,7 @@ const CaptainProtectWrapper = ({
       localStorage.removeItem('token')
       navigate('/captain-login')
   })
-    }, [token, navigate, setCaptain])  
+    }, [token])  
 
     
    

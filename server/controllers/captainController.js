@@ -69,9 +69,26 @@ export const getCaptainProfile = async(req,res,next)=>{
     return res.status(200).json({captain:req.captain});
 }
 
-export const logoutCaptain = async(req,res,next)=>{
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-    await BlacklistTokenModel.create({token});
-   res.clearCookie('token');
-    return res.status(200).json({message:'Logout Successfully'});
-}
+export const logoutCaptain = async (req, res, next) => {
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+
+        if (!token) {
+            return res.status(400).json({ message: 'Token not provided' });
+        }
+
+        // Check if the token is already in the blacklist
+        const existingToken = await BlacklistTokenModel.findOne({ token });
+        if (!existingToken) {
+            // Add token to the blacklist
+            await BlacklistTokenModel.create({ token });
+        }
+
+        // Clear the cookie and respond
+        res.clearCookie('token');
+        return res.status(200).json({ message: 'Logout Successfully' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+};
