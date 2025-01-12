@@ -8,12 +8,14 @@ import VehiclePanel from "../components/VehiclePanel";
 import ConfirmRide from "../components/ConfirmRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDrivers from "../components/WaitingForDrivers";
-import axios from 'axios';
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
+;
 
 const Home = () => {
+   const navigate = useNavigate();
   const [pickup, setpickup] = useState("");
   const [dropoff, setdropoff] = useState("");
   const [panelopen, setPanelopen] = useState(false);
@@ -34,61 +36,81 @@ const Home = () => {
 
   const [suggestions, setSuggestions] = useState([]);
 
-  const [ activeField, setActiveField ] = useState(null)
+  const [activeField, setActiveField] = useState(null);
 
-  const [fare, setfare] = useState({})
+  const [fare, setfare] = useState({});
 
-  const {sendMessage, receiveMessage} = useContext(SocketContext) 
-  const {user}= useContext(UserDataContext)
- 
+  const { sendMessage, receiveMessage, socket } = useContext(SocketContext);
+  const { user } = useContext(UserDataContext);
 
-useEffect(()=>{
-sendMessage("join", {userType: 'user', userId: user._id})
+  const [OTP, setOTP] = useState("");
+
+  useEffect(() => {
+    sendMessage("join", { userType: "user", userId: user._id });
+  }, [user]);
+
+  const [ride, setRide] = useState(null);
+
+  socket.on("ride-confirmed", (data) => {
+    setwaitingForDrivers(true);
+    setvehicleFound(false);
+    setvehiclePanel(false);
+    
+    setRide(data);
+  });
+
+  socket.on("ride-started", (ride) => {
+    setwaitingForDrivers(false);
+    navigate("/riding", { state: { ride } });
+
+  });
 
 
-
-},[user])
-  
-
-  const vehicles= {
+  const vehicles = {
     car: "https://i.pinimg.com/474x/8d/21/7b/8d217b1000b642005fea7b6fd6c3d967.jpg",
-    motorcycle: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1649231091/assets/2c/7fa194-c954-49b2-9c6d-a3b8601370f5/original/Uber_Moto_Orange_312x208_pixels_Mobile.png",
-     auto: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png"
-  }
+    motorcycle:
+      "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1649231091/assets/2c/7fa194-c954-49b2-9c6d-a3b8601370f5/original/Uber_Moto_Orange_312x208_pixels_Mobile.png",
+    auto: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png",
+  };
 
   const fetchSuggestions = async (input) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
-        params: { input },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`}
-      });
-      if(response.status === 200) {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+        {
+          params: { input },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
         setSuggestions(response.data);
       }
-      
     } catch (error) {
-      console.error('Error fetching suggestions:', error);
+      console.error("Error fetching suggestions:", error);
     }
   };
 
-  const findCaptain =  async () => {
-       if(!pickup || !dropoff){
-        alert('Please enter both pickup and dropoff locations')
-        return;
-       }
-        setvehiclePanel(true);
-        setPanelopen(false);
-     
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
-          params: { pickup, dropoff },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`}
-        });
-        setfare(response.data)
-        
+  const findCaptain = async () => {
+    if (!pickup || !dropoff) {
+      alert("Please enter both pickup and dropoff locations");
+      return;
+    }
+    setvehiclePanel(true);
+    setPanelopen(false);
 
-  }
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
+      {
+        params: { pickup, dropoff },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    setfare(response.data);
+  };
 
   const handleInputChange = (e, setState) => {
     const value = e.target.value;
@@ -132,10 +154,12 @@ sendMessage("join", {userType: 'user', userId: user._id})
     if (vehiclePanel) {
       gsap.to(vehiclePanelRef.current, {
         transform: "translateY(0)",
+          display: "block"
       });
     } else {
       gsap.to(vehiclePanelRef.current, {
         transform: "translateY(100%)",
+        display: "none",
       });
     }
   }, [vehiclePanel]);
@@ -150,7 +174,6 @@ sendMessage("join", {userType: 'user', userId: user._id})
       gsap.to(confirmRideRef.current, {
         transform: "translateY(100%)",
         display: "none",
-        
       });
     }
   }, [confirmRidePanel]);
@@ -183,34 +206,40 @@ sendMessage("join", {userType: 'user', userId: user._id})
     }
   }, [vehicleFound]);
 
-
-async function  createRide(){
-  const response =  await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
-    pickup,
-    destination :dropoff,
-    vehicleType,
-  }, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`}
-  })
-  console.log(response.data);
-  
-}
-
+  async function createRide() {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/rides/create`,
+      {
+        pickup,
+        destination: dropoff,
+        vehicleType,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    console.log(response.data);
+    setOTP(response.data.otp);
+  }
 
   return (
     <div>
       <div className="h-screen relative overflow-hidden">
-       <div className="fixed p-6 top-0 flex items-center justify-between w-full" >
-       <img
-          className="w-16 left-5 top-8"
-          src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-          alt="uber"
-        />
-          <Link to='/user/logout' className=' h-10 top-8 w-10 bg-white flex items-center justify-center shadow-lg rounded-full  '>
-                <i className="ri-logout-box-r-line"></i>
-        </Link>
-       </div>
+        <div className="fixed p-6 top-0 flex items-center justify-between w-full">
+          <img
+            className="w-16 left-5 top-8"
+            src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+            alt="uber"
+          />
+          <Link
+            to="/user/logout"
+            className=" h-10 top-8 w-10 bg-white flex items-center justify-center shadow-lg rounded-full  "
+          >
+            <i className="ri-logout-box-r-line"></i>
+          </Link>
+        </div>
         <div className="h-screen w-screen">
           <img
             onClick={() => setvehiclePanel(false)}
@@ -239,8 +268,8 @@ async function  createRide(){
                   placeholder="Pick up location"
                   value={pickup}
                   onClick={() => {
-                    setActiveField('pickup')
-                    setPanelopen(true)
+                    setActiveField("pickup");
+                    setPanelopen(true);
                   }}
                   onChange={(e) => handleInputChange(e, setpickup)}
                 />
@@ -250,19 +279,18 @@ async function  createRide(){
                   placeholder="Drop off location"
                   value={dropoff}
                   onClick={() => {
-                    setActiveField('dropoff')
-                    setPanelopen(true)
+                    setActiveField("dropoff");
+                    setPanelopen(true);
                   }}
                   onChange={(e) => handleInputChange(e, setdropoff)}
                 />
               </form>
               <button
-              onClick={() => {
-               findCaptain()
-              }
-              }
-
-              className="bg-black text-white w-full text-xl px-4 py-2 mt-4 rounded">
+                onClick={() => {
+                  findCaptain();
+                }}
+                className="bg-black text-white w-full text-xl px-4 py-2 mt-4 rounded"
+              >
                 Find ride
               </button>
             </div>
@@ -312,13 +340,13 @@ async function  createRide(){
           ref={vehicleFoundRef}
           className="fixed z-10 w-full translate-y-full bottom-0 px-3 py-10 pt-12 bg-white overflow-auto"
         >
-          <LookingForDriver setvehicleFound={setvehicleFound}
+          <LookingForDriver
+            setvehicleFound={setvehicleFound}
             pickup={pickup}
             dropoff={dropoff}
             fare={fare}
             vehicleType={vehicleType}
             vehicles={vehicles}
-          
           />
         </div>
 
@@ -326,7 +354,11 @@ async function  createRide(){
           ref={WaitingForDriversRef}
           className="fixed z-10 w-full translate-y-full bottom-0 px-3 py-10 pt-12 bg-white overflow-auto"
         >
-          <WaitingForDrivers setwaitingForDrivers={setwaitingForDrivers} />
+          <WaitingForDrivers setwaitingForDrivers={setwaitingForDrivers}
+          ride={ride}
+          otp={OTP}
+          vehicles={vehicles}
+          />
         </div>
       </div>
     </div>

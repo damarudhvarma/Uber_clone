@@ -8,34 +8,31 @@ import gsap from 'gsap'
 import ConfirmRidePopup from '../components/ConfirmRidePopup'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from '../context/CaptainContext'
-
-
+import axios from 'axios'
 
 
 const CaptianHome = () => {
   
-  const [ridePopupPanel, setridePopupPanel] = useState(true);
+  const [ridePopupPanel, setridePopupPanel] = useState(false);
   const ridePopupPanelRef = useRef(null);
 
   const [confirmRidePopup, setConfirmRidePopup] = useState(false);
   const confirmRidePopupRef = useRef(null);
 
-  const {sendMessage, receiveMessage,socket} = useContext(SocketContext) 
+  const {sendMessage,socket} = useContext(SocketContext) 
   const {captain}=useContext(CaptainDataContext)
+  const  [ride, setRide] = useState(null);
 
   useEffect(() => {
     if (!captain || !captain._id) {
       console.error("Captain data is missing!");
       return;
-    }
-
-    // Send join event to the server
+    } 
     sendMessage("join", {
       userId: captain._id,
       userType: "captain",
     });
 
-    // Function to update captain's location
     const updateLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -52,21 +49,32 @@ const CaptianHome = () => {
       }
     };
 
-    // Set interval to send location every 10 seconds
     const intervalId = setInterval(updateLocation, 10000);
 
-    // Send location immediately on component mount
     updateLocation();
 
-    // Cleanup interval on component unmount
     return () => {
       clearInterval(intervalId);
     };
-  }, [captain, sendMessage]);
+  }, []);
  
  socket.on('new-ride', (data)=>{  
-  console.log("eventData:",data);
+  setRide(data);
+  setridePopupPanel(true);
  })
+
+  const confirmRide = async ()=>{
+   const  res = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confrim`,{
+     captainId:captain._id,
+     rideId:ride._id,
+    },{ headers:{
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }})
+    setConfirmRidePopup(true);
+    setridePopupPanel(false);
+
+  }
+
 
   useGSAP(() => {
     if (ridePopupPanel) {
@@ -124,13 +132,17 @@ const CaptianHome = () => {
       >
            <RidePopup setridePopupPanel={setridePopupPanel}
            setConfirmRidePopup={setConfirmRidePopup}
+           ride={ride}
+            confirmRide={confirmRide}
            />
       </div>
         <div
         ref={confirmRidePopupRef}
         className="fixed z-10 w-full h-screen translate-y-full bottom-0 px-3 py-10 pt-12  bg-white overflow-auto"
       >
-           <ConfirmRidePopup setConfirmRidePopup={setConfirmRidePopup} setridePopupPanel={setridePopupPanel}/>
+           <ConfirmRidePopup setConfirmRidePopup={setConfirmRidePopup} setridePopupPanel={setridePopupPanel}
+           ride={ride}
+           />
       </div>
         </div>
 

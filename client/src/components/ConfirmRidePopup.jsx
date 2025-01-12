@@ -1,17 +1,33 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import axios from 'axios';
 
 
 
-const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel}) => {
+const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel,ride}) => {
 
  const [otp, setOtp] = useState('');
+ const navigate = useNavigate();  
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("form submitted");
+         const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {  rideId: ride._id, otp },
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            }
+         );
+         if (res.status === 200) {
+             console.log(res.data);
+             setridePopupPanel(false);
+             setConfirmRidePopup(false);
+              navigate('/captain-riding', { state: { ride: res.data } });
 
+         }
 
     }
 
@@ -33,33 +49,37 @@ const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel}) => {
     <div className='flex items-center justify-between p-3 bg-black rounded-lg mt-4'>
         <div className='flex items-center gap-3  '>
         <img className='h-10 w-10 rounded-full object-cover' src="https://imgs.search.brave.com/q30mtGI6Uq8L1sU9H02hXDiETyRoSxEtuLtXNNmTvSw/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9wbHVz/cG5nLmNvbS9pbWct/cG5nL3VzZXItcG5n/LWljb24teW91bmct/dXNlci1pY29uLTI0/MDAucG5n" alt="user" />
-        <h2 className='text-lg font-medium text-white'>User's name</h2>
+        <h2 className='text-lg font-medium text-white'>{ride?.user.fullname
+.firstname +" "+ride?.user.fullname
+.lastname            }</h2>
         </div>
-        <h5 className='text-lg font-semibold text-white'>2.2 KM</h5>
+    
     </div>
     <div className="w-full mt-5  gap-5">
       <div className="flex gap-5 items-center border-b-2 p-3">
         <i className=" text-lg ri-map-pin-user-fill"></i>
         <div>
-          <h4 className="text-lg font-medium">562/11-A</h4>
-          <p className="text-sm -mt-1 text-gray-600">HYD, Telangana </p>
-        </div>
-      </div>
-      <div className="flex gap-5 items-center border-b-2 p-3" >
-        <i className=" text-lg ri-map-pin-2-fill"></i>
-        <div>
-          <h4 className="text-lg font-medium">562/11-A</h4>
-          <p className="text-sm -mt-1 text-gray-600">HYD, Telangana </p>
-        </div>
-      </div>
-      <div className="flex gap-5 items-center  p-3">
-        {" "}
-        <i className="ri-currency-line"></i>
-        <div>
-          <h4 className="text-lg font-medium">₹192.20</h4>
-          <p className="text-sm -mt-1 text-gray-600">cash cash </p>
-        </div>
-      </div>
+              <h4 className="text-lg font-medium">{ride?.pickup.split(" ")[0]}</h4>
+              <p className="text-sm -mt-1 text-gray-600">{ride?.pickup} </p>
+            </div>
+          </div>
+          <div className="flex gap-5 items-center border-b-2 p-3">
+            <i className=" text-lg ri-map-pin-2-fill"></i>
+            <div>
+              <h4 className="text-lg font-medium">{ride?.destination.split(",")[0]
+              }</h4>
+              <p className="text-sm -mt-1 text-gray-600">{ride?.destination
+              } </p>
+            </div>
+          </div>
+          <div className="flex gap-5 items-center  p-3">
+            {" "}
+            <i className="ri-currency-line"></i>
+            <div>
+              <h4 className="text-lg font-medium">₹{ride?.fare}</h4>
+              <p className="text-sm -mt-1 text-gray-600">price</p>
+            </div>
+          </div>
     </div>
     <form action=""></form>
    <div className='mt-6'>
@@ -75,10 +95,10 @@ const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel}) => {
             .value)}
         />
 
-         <Link  to ='/captain-riding'
-    className="w-ful flex justify-center mt-5 bg-black font-semibold p-4 rounded-lg  text-white text-lg">
+         <button  
+    className="w-full flex justify-center mt-5 bg-black font-semibold p-4 rounded-lg  text-white text-lg">
       Confirm
-    </Link>
+    </button>
     <button
     onClick={()=>{
         setConfirmRidePopup(false);

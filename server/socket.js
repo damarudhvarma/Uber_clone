@@ -44,7 +44,7 @@ export function initializeSocket(server) {
                         lng: location.lng,
                     },
                 });
-                console.log(`Location updated for captain ${userId}`);
+                
             } catch (error) {
                 console.error(`Error updating location: ${error.message}`);
                 socket.emit('error', { message: 'Failed to update location' });

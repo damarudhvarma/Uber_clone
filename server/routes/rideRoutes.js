@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body, query } from "express-validator";
-import { createRide, getFare } from "../controllers/rideController.js";
-import { authUser } from "../middlewares/authMiddleware.js";
+import { confrimRide, createRide, getFare, startRide } from "../controllers/rideController.js";
+import { authCaptain, authUser } from "../middlewares/authMiddleware.js";
 
 const rideRouter = Router();
 
@@ -18,6 +18,18 @@ rideRouter.post("/create",
     query('dropoff').isString().notEmpty().withMessage('Destination is required'),
     getFare
  );
+
+ rideRouter.post("/confrim",authCaptain,
+    body('rideId').isMongoId().notEmpty().withMessage('Ride is required'),
+    confrimRide
+ );
+
+ rideRouter.post("/start-ride",authCaptain,
+      body('rideId').isMongoId().notEmpty().withMessage('Ride is required'),
+      body('otp').isString().notEmpty().withMessage('OTP is required'),
+      startRide
+      
+ )
 
 
 
