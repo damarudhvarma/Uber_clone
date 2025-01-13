@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import { confirmRideService, createRides, startRideService, totalFare } from "../services/rideService.js";
+import { confirmRideService, createRides, finishRide, startRideService, totalFare } from "../services/rideService.js";
 import { getCaptainsInTheRadius, getLocationCoordinates } from "../services/Maps.service.js";
 import { sendMessageToSocketId } from "../socket.js";
 import rideModel from "../models/rideModel.js";
@@ -50,7 +50,7 @@ export const createRide = async (req, res) => {
   } catch (error) {
     console.error("Error creating ride:", error.message);
 
-    // Ensure no response is sent again if headers were already sent
+    
     if (!res.headersSent) {
       res.status(500).json({ error: error.message });
     }
@@ -106,8 +106,7 @@ export const createRide = async (req, res) => {
      
     try {
       const ride = await startRideService({rideId, captain: req.captain, otp});
-        
-       console.log("ride started:",ride)  
+    
         sendMessageToSocketId(ride.user.socketId, {
             event: "ride-started",
             data: ride,
@@ -119,4 +118,28 @@ export const createRide = async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
+ }
+
+
+ export const endRide= async (req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const { rideId } = req.body;
+    try {
+      
+      const ride = await finishRide({rideId, captain: req.captain});
+
+
+    sendMessageToSocketId(ride.user.socketId, {
+        event: "ride-ended",
+        data: ride,
+    });
+
+    return res.status(200).json(ride);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
  }

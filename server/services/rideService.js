@@ -119,3 +119,27 @@ export const startRideService = async ({rideId,otp,captain})=>{
     return ride;
 
 }
+
+
+
+export const finishRide = async ({rideId,captain})=>{
+    if(!rideId){
+        throw new Error('Ride ID is required to Finish Ride');
+    }
+
+    const ride = await rideModel.findOne({ _id: rideId, captain:captain._id }).populate('user').populate('captain');
+
+    if(!ride){
+        throw new Error('Ride not found');
+    }
+    if(ride.status !== 'ongoing'){
+        throw new Error('Ride not ongoing');
+    }
+
+    await rideModel.findOneAndUpdate({ _id
+        : rideId },
+         { status: 'completed' });
+
+    return ride;
+
+}

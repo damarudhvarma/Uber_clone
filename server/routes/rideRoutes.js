@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { body, query } from "express-validator";
-import { confrimRide, createRide, getFare, startRide } from "../controllers/rideController.js";
+import { confrimRide, createRide, endRide, getFare, startRide } from "../controllers/rideController.js";
 import { authCaptain, authUser } from "../middlewares/authMiddleware.js";
 
 const rideRouter = Router();
@@ -30,7 +30,11 @@ rideRouter.post("/create",
       startRide
       
  )
-
+ 
+ rideRouter.post("/end-ride",authCaptain,
+      body('rideId').isMongoId().notEmpty().withMessage('Ride is required'),  
+      endRide
+   )
 
 
 

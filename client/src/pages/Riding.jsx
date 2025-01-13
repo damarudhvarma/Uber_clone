@@ -1,11 +1,19 @@
 import React, { useContext } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { SocketContext } from '../context/SocketContext';
 
 
 const Riding = () => {
   
   const rideData = useLocation().state?.ride;
    
+  const {socket} = useContext(SocketContext);
+  const navigate = useNavigate();
+
+  socket.on("ride-ended", (data) => {
+    navigate("/home");
+  })
+
    
    const vehicles = {
     car: "https://i.pinimg.com/474x/8d/21/7b/8d217b1000b642005fea7b6fd6c3d967.jpg",
