@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Start from "./pages/Start";
 import UserLogin from "./pages/UserLogin";
@@ -15,6 +15,26 @@ import Riding from "./pages/Riding";
 import CaptainRiding from "./pages/CaptainRiding";
 
 const App = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  if (!isMobile) {
+    return (
+      <div className="w-full h-screen bg-[#F1F1F3]">
+       <img 
+       className="object-contain w-full h-full "
+      src="/mobile_alert.jpeg" alt="mobile_screens only" />
+      </div>
+    );
+  }
+
   return (
     <div className="">
       <Routes>
