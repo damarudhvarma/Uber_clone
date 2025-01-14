@@ -17,7 +17,7 @@ const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel,ride}) => {
          const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {  rideId: ride._id, otp },
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    Authorization: `Bearer ${localStorage.getItem("captain-token")}`,
                 },
             }
          );
@@ -99,16 +99,7 @@ const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel,ride}) => {
     className="w-full flex justify-center mt-5 bg-black font-semibold p-4 rounded-lg  text-white text-lg">
       Confirm
     </button>
-    <button
-    onClick={()=>{
-        setConfirmRidePopup(false);
-        setridePopupPanel(false);
-    }
-    }
-
-    className="w-full mt-3 bg-red-600 font-semibold p-3 rounded-lg  text-white text-lg">
-      Cancel
-    </button>
+    
     </form>
     </div>
    

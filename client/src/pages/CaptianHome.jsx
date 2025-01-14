@@ -69,7 +69,7 @@ const CaptianHome = () => {
      captainId:captain._id,
      rideId:ride._id,
     },{ headers:{
-      Authorization: `Bearer ${localStorage.getItem('token')}`
+      Authorization: `Bearer ${localStorage.getItem('captain-token')}`
     }})
     setConfirmRidePopup(true);
     setridePopupPanel(false);
