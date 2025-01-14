@@ -66,7 +66,7 @@ const FinishRide = ({setFinishRidePanel,rideData}) => {
     <form action=""></form>
    <div className='mt-6'>
    <button  onClick={finishRide}
-    className="w-ful flex justify-center mt-5 bg-black font-semibold p-4 rounded-lg  text-white text-lg">
+    className="w-full flex justify-center mt-5 bg-black font-semibold p-4 rounded-lg  text-white text-lg">
       Finish Ride
     </button>
     <p className='text-xs text-center text-red-500 mt-6'>Click on finish ride if you have completed the payment.</p>

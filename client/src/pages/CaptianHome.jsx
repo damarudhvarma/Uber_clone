@@ -9,6 +9,7 @@ import ConfirmRidePopup from '../components/ConfirmRidePopup'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from '../context/CaptainContext'
 import axios from 'axios'
+import LiveTracking from '../components/LiveTracking'
 
 
 const CaptianHome = () => {
@@ -103,27 +104,20 @@ const CaptianHome = () => {
 
 
   return (
-    <div className='h-screen'>
-      <div className='fixed p-6 top-0 flex items-center justify-between w-full '>
-      <img
-        className="w-16  left-5 top-5"
-        src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-        alt="uber"
-      />
-      <Link to='/captain-logout' className='h-10 w-10 bg-white flex items-center justify-center shadow-lg rounded-full  '>
+    <div className='h-screen relative overflow-hidden'>
+     
+
+      <Link to='/captain-logout' 
+      className='h-10 w-10 bg-white flex items-center justify-center shadow-lg rounded-full z-30 right-3 top-2 absolute'>
       <i className="ri-logout-box-r-line"></i>
         </Link>
-      </div>
-        <div className='h-3/5 '>
-        <img
-          
-          className="object-cover h-full w-full"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt="map"
-        />
-        </div>
-        <div className='h-2/5 p-6'>
+      
+        <div className='h-screen relative '>
+        <LiveTracking  />
+       
+        <div className='h-[60%] p-6 absolute'>
        <CaptainDetails/>
+        </div>
         </div>
         <div>
         <div

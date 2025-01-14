@@ -12,6 +12,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
+import LiveTracking from "../components/LiveTracking";
 ;
 
 const Home = () => {
@@ -220,33 +221,22 @@ const Home = () => {
         },
       }
     );
-    console.log(response.data);
     setOTP(response.data.otp);
   }
 
   return (
     <div>
-      <div className="h-screen relative overflow-hidden">
-        <div className="fixed p-6 top-0 flex items-center justify-between w-full">
-          <img
-            className="w-16 left-5 top-8"
-            src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-            alt="uber"
-          />
-          <Link
+      <div className="h-screen relative overflow-hidden ">
+        
+        <Link
             to="/user/logout"
-            className=" h-10 top-8 w-10 bg-white flex items-center justify-center shadow-lg rounded-full  "
+            className=" h-10 top-3 right-2 z-30 w-10 bg-white flex items-center justify-center shadow-lg rounded-full absolute"
           >
             <i className="ri-logout-box-r-line"></i>
           </Link>
-        </div>
+     
         <div className="h-screen w-screen">
-          <img
-            onClick={() => setvehiclePanel(false)}
-            className="object-cover h-full w-full"
-            src="https://i.redd.it/g2r5ewz4tqk11.jpg"
-            alt="map"
-          />
+        <LiveTracking />
         </div>
 
         <div className="flex flex-col justify-end h-screen absolute top-0 w-full">

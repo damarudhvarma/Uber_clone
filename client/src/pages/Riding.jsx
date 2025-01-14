@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { SocketContext } from '../context/SocketContext';
+import LiveTracking from '../components/LiveTracking';
 
 
 const Riding = () => {
@@ -23,21 +24,25 @@ const Riding = () => {
   };
 
   return (
-    <div className='h-screen'>
+    <div className='h-screen relative'>
         <Link to='/home' className='h-10 fixed w-10 bg-white flex items-center justify-center shadow-lg rounded-full top-5 right-5 z-50'>
         <i className="text-lg font-medium ri-home-5-line"></i>
         </Link>
-        <div className='h-1/2'>
-        <img
+        <div className='h-[55%] w-full '>
+        {/* <img
           
           className="object-cover h-full w-full"
           src="https://i.redd.it/g2r5ewz4tqk11.jpg"
           alt="map"
-        />
+        /> */}
+       <div className=' h-screen w-full'>
+
+        <LiveTracking />
+       </div>
         </div>
-        <div className='h-1/2 p-4'>
+        <div className='h-[45%] p-4 absolute w-full bottom-0 bg-white'>
         <div>
-        <div className='flex items-center justify-between mt-4'>
+        <div className='flex items-center  justify-between mt-4'>
         <img
           className="h-16 "
          src={vehicles[rideData?.captain.vehicle.vehicleType]}
@@ -76,7 +81,7 @@ const Riding = () => {
             </div>
           </div>
         </div></div>
-        <button className="w-full mt-5 bg-black font-semibold p-2 rounded-lg  text-white text-lg">Make a Payment</button>
+        <Link to="/home" className="w-full block mt-5 bg-black font-semibold p-3 rounded-lg  text-white text-center text-lg">Make a Payment</Link>
         </div>
     </div>
   )
