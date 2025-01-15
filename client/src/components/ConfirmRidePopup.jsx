@@ -13,7 +13,7 @@ const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel,ride}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("form submitted");
+       
          const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {  rideId: ride._id, otp },
             {
                 headers: {
@@ -22,7 +22,7 @@ const ConfirmRidePopup = ({setConfirmRidePopup,setridePopupPanel,ride}) => {
             }
          );
          if (res.status === 200) {
-             console.log(res.data);
+            
              setridePopupPanel(false);
              setConfirmRidePopup(false);
               navigate('/captain-riding', { state: { ride: res.data } });
